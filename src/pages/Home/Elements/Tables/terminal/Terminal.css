@@ -1,0 +1,65 @@
+.object-table {
+    padding: 20px;
+    width: 1175px; 
+    height: 630px; /* Фиксированная высота */
+}
+
+.object-3 {
+    width: 100%; 
+    height: 100%; /* Используем 100% высоты родительского элемента */
+    margin: 10px; 
+    background-color: #d4bba9;
+    border-radius: 15px;
+    overflow: auto;
+}
+
+.scrollable {
+    overflow: auto;
+    max-height: 100%; 
+    max-width: 100%; 
+    border: 0.5px solid #ddd;
+    border-radius: 15px;
+}
+
+.svod-table {
+    border-collapse: collapse;
+    width: max-content; /* Используем max-content, чтобы подгонять под содержимое */
+    table-layout: auto; /* Используем auto, чтобы подгонять ширину под содержимое */
+}
+
+.svod-table th, .svod-table td {
+    border: 0.5px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Скрываем переполнение */
+    
+}
+
+.svod-table th {
+    background-color: #d4bba9;
+}
+
+.selected-cell {
+    background-color: #d0e7ff;
+}
+
+.cell {
+    user-select: none;
+    background-color: white;
+}
+
+.editable-cell {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+}
+
+.editable-cell:focus {
+    border: 1px solid #00f;
+}
+
+.buttonTable {
+    margin-right: 10px;
+}

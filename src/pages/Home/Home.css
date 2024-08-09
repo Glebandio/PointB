@@ -1,0 +1,136 @@
+.header {
+    background-color: #b79883;
+    width: 100%;
+    height: 60px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.logo {
+    padding-left: 20px;
+    font-size: 24px;
+    padding-right: 20px;
+    line-height: 60px;
+}
+
+.header div {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-end; 
+    padding-right: 20px; 
+}
+
+.header div strong {
+    margin-top: 5px;
+}
+
+.bodyHome {
+    background-color: #b79883;
+    width: 100%;
+    min-height: calc(100vh - 90px); /* Высота с учетом header и footer */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: row; /* Горизонтальное расположение */
+}
+
+.object-1 {
+    background-color: #d4bba9;
+    width: 230px; 
+    margin: 5px; 
+    border-radius: 15px;
+    border: 1px solid white;
+    padding-top: 5px;
+    display: flex; 
+    flex-direction: column;
+    align-items: flex-start;
+    color: white;
+    font-weight: bold;
+    flex-shrink: 0; /* Отключаем сжатие */
+}
+
+.buttonMenu{
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 20px;
+    background-color: #d4bba9;
+    border-radius: 20px;
+    border: 0;
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.buttonTableZone{
+    width: 100%;
+}
+
+.buttonTableRow{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.buttonTable{
+    background-color: #d4bba9;
+    border-radius: 20px;
+    border: 1px solid #d4bba9;
+    color: white;
+    align-items: flex-end;
+    height: 32px;
+    width: 150px;
+    font-size: 14px;
+    margin-right: 10px;
+    align-items: flex-end;
+}
+
+.selectedButtonMenu{
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 20px;
+    background-color: #d4bba9;
+    border-radius: 20px;
+    border: 0;
+    color: #b79883;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.object-2 {
+    flex-grow: 1; /* Устанавливаем рост */
+    display: flex;
+    flex-direction: column; /* Устанавливаем колонну для дочерних элементов */
+    background-color: #b79883;
+    overflow: hidden; /* Отключаем прокрутку */
+}
+
+.object-table {
+    width: 100%; /* Растягиваем на всю ширину родительского контейнера */
+    flex-grow: 1; /* Растягиваем на всю высоту родительского контейнера */
+    display: flex;
+    margin-right: 0; /* Убираем внешний отступ справа */
+    position: relative; /* Изменяем на relative для управления позиционированием внутри родителя */ /* Добавляем padding, если нужно */
+    box-sizing: border-box; /* Включаем отступы и границы в общую ширину и высоту */
+}
+
+.object-3 {
+    width: 100%; 
+    display: flex;
+    flex-direction: row;
+    background-color: #d4bba9;
+    border-radius: 15px;
+}
+ 
+.footerHome{
+    height: 30px;
+    background-color: #b79883;
+    width: 100%;
+}
+
+.input{
+    border-radius: 20px;
+    border: 1px solid #d4bba9;
+}
