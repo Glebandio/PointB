@@ -21,6 +21,7 @@ export default function Perevoz() {
     }
     return initialData;
   });
+  const [editedRows, setEditedRows] = useState(new Set());
   const tableRef = useRef(null);
 
   const columns = [
@@ -69,9 +70,6 @@ export default function Perevoz() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000); // Fetch data every 5 seconds
-
-    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [fetchData]);
 
   function handleMouseDown(row, col) {
@@ -103,14 +101,66 @@ export default function Perevoz() {
   }
 
   function handleCellChange(row, col, newValue) {
-    const newData = data.map((rowData, rIdx) => 
-      rowData.map((cellData, cIdx) => 
-        rIdx === row && cIdx === col ? newValue : cellData
-      )
-    );
-    setData(newData);
+    setData(prevData => {
+      const newData = prevData.map((rowData, rIdx) => {
+        if (rIdx === row) {
+          const newRowData = { ...rowData };
+          const key = Object.keys(newRowData)[col];
+          newRowData[key] = newValue;
+          return newRowData;
+        }
+        return rowData;
+      });
+      return newData;
+    });
+
+    setEditedRows(prev => new Set([...prev, row]));
   }
 
+  useEffect(() => {
+    if (editedRows.size > 0) {
+      const editRow = async (row) => {
+        const rowData = data[row];
+        
+        try {
+          const response = await fetch('/api/editPerevoz', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rowData }) // Sending only rowData which contains the id
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to update row');
+          }
+  
+          const result = await response.json();
+          console.log('Update successful:', result);
+  
+          if (result.status) {
+            // Update the local state with the updated data
+            setData(prevData => {
+              const newData = [...prevData];
+              newData[row] = result.data; // Ensure data is correctly updated
+              return newData;
+            });
+          }
+        } catch (error) {
+          console.error('Error saving data:', error);
+        }
+      };
+  
+      const rows = Array.from(editedRows);
+      rows.forEach(row => {
+        editRow(row);
+      });
+  
+      setEditedRows(new Set());
+    }
+  }, [editedRows, data]);
+
+  
   function renderCell(row, col) {
     const cellKey = `${row}-${col}`;
     const isSelected = selectedCells.has(cellKey);
