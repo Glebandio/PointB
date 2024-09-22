@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ProdazhiButtons from "./ProdazhiButtons";
+import { ReactComponent as IconClose } from "./icon-close.svg";
 import './Prodazhi.css';
 import * as XLSX from 'xlsx';
 
@@ -11,6 +12,9 @@ export default function Prodazhi() {
   const [isEditing, setIsEditing] = useState(false);
   const [data, setData] = useState([])
   const [editedRows, setEditedRows] = useState(new Set());
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // состояние для открытия/закрытия модального окна
+  const [selectedRow, setSelectedRow] = useState(null)
   const tableRef = useRef(null);
 
   const columns = [
@@ -51,7 +55,7 @@ export default function Prodazhi() {
   }, [handleCopy]);
 
   const fetchData = useCallback(() => {
-    fetch('/api/prodazhi')
+    fetch('http://localhost:8080/api/prodazhi')
       .then(res => res.json())
       .then(fetchedData => setData(fetchedData))
       .catch(error => console.error('Error fetching data:', error));
@@ -88,6 +92,8 @@ export default function Prodazhi() {
   function handleEditToggle() {
     setIsEditing(prev => !prev);
   }
+
+
 
 
   function handleCellChange(row, col, newValue) {
@@ -176,9 +182,14 @@ export default function Prodazhi() {
     );
   }
 
+  const handleRowDoubleClick = (row) => {
+    setSelectedRow(data[row]); // сохраняем данные строки
+    setIsModalOpen(true);      // открываем модальное окно
+  };
+
   function renderRow(row) {
     return (
-      <tr key={row}>
+      <tr key={row} onDoubleClick={() => handleRowDoubleClick(row)}>
         {columns.map((_, col) => renderCell(row, col))}
       </tr>
     );
@@ -191,9 +202,239 @@ export default function Prodazhi() {
     XLSX.writeFile(wb, "SailsData.xlsx");
   };
 
+  const Modal = ({ isOpen, onClose, rowData }) => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
+    useEffect(() => {
+      if (isOpen && rowData && rowData.id) {
+        setLoading(true);
+        setError(null);
+  
+        // POST запрос на сервер с передачей id через тело запроса
+        fetch('/api/info', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: rowData.id }), // Передаем id в теле запроса
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Ошибка при получении данных');
+            }
+            return response.json();
+          })
+          .then((result) => {
+            setData(result.data); // Извлекаем только data
+            setLoading(false);
+          })
+          .catch((error) => {
+            setError(error.message);
+            setLoading(false);
+          });
+      }
+    }, [isOpen, rowData]);
+  
+    // Функция для обработки изменений полей ввода
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setData((prevData) => ({
+        ...prevData,
+        [name]: value,  // Обновляем только изменённое поле
+      }));
+    };
+  
+    // Функция для сохранения изменений
+    const handleSave = () => {
+      // POST запрос для сохранения изменений
+      fetch('/api/editinfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),  // Отправляем все данные, включая изменённые
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Ошибка при сохранении данных');
+          }
+          return response.json();
+        })
+        .then((result) => {
+          console.log('Изменения успешно сохранены', result);
+          onClose();  // Закрываем модальное окно после успешного сохранения
+        })
+        .catch((error) => {
+          console.error('Ошибка сохранения:', error.message);
+        });
+    };
+  
+    if (!isOpen) return null;
+  
+    return (
+      <div className="modal">
+        <div className="modal-wrapper">
+          <div className="modal-content">
+            <button className="modal-close-button" onClick={onClose}>
+              <IconClose />
+            </button>
+            <h2>Детали строки</h2>
+            {loading ? (
+              <p>Загрузка...</p>
+            ) : error ? (
+              <p>Ошибка: {error}</p>
+            ) : (
+              <form>
+                <div>
+                  <label>ID:</label>
+                  <p>
+                    <input type="text" value={data?.id || ''} readOnly />
+                  </p>
+                </div>
+                <div>
+                  <label>Клиент:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="klient" 
+                      value={data?.klient || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Дата сделки:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="datas" 
+                      value={data?.datas || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Статус сделки:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="status" 
+                      value={data?.status || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Стоимость продажи:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="stoimost" 
+                      value={data?.stoimost || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Маржа по сделке:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="marzha" 
+                      value={data?.marzha || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Вид расчета:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="vid" 
+                      value={data?.vid || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>НДС:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="nds" 
+                      value={data?.nds || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Количество КТК:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="kolvo" 
+                      value={data?.kolvo || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Город:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="city" 
+                      value={data?.city || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Ответственный менеджер:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="manager" 
+                      value={data?.manager || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+                <div>
+                  <label>Контейнеры:</label>
+                  <p>
+                    <input 
+                      type="text" 
+                      name="containers" 
+                      value={data?.containers || ''} 
+                      onChange={handleChange} 
+                    />
+                  </p>
+                </div>
+              </form>
+            )}
+            <div style={{ display: 'flex' }}>
+              <button className="button-modal" onClick={onClose}>Закрыть</button>
+              <button className="button-modal" onClick={handleSave}>Сохранить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
 
   return (
+    
     <div className='object-table'>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        rowData={selectedRow}
+      />
       <ProdazhiButtons 
       onEditToggle={handleEditToggle} 
       isEditing={isEditing} 
@@ -202,7 +443,7 @@ export default function Prodazhi() {
       />
       <div className='object-3'>
         <div className='scrollable'>
-          <table className='svod-table' ref={tableRef}>
+          <table className='podryad-table' ref={tableRef}>
             <thead>
               <tr>
                 {columns.map((col, index) => (

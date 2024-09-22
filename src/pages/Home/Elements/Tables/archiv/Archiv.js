@@ -255,7 +255,7 @@ export default function Archive() {
       <ArchiveButtons onEditToggle={handleEditToggle} isEditing={isEditing} onCopy={handleCopy} />
       <div className='object-3'>
         <div className='scrollable'>
-          <table className='svod-table' ref={tableRef}>
+          <table className='podryad-table' ref={tableRef}>
             <thead>
               <tr>
                 {columns.map((col, index) => (

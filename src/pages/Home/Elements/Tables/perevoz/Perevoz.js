@@ -10,17 +10,7 @@ export default function Perevoz() {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [data, setData] = useState(() => {
-    const initialData = [];
-    for (let row = 0; row < 10; row++) {
-      const rowData = [];
-      for (let col = 0; col < 16; col++) {
-        rowData.push(`${row}-${col}`);
-      }
-      initialData.push(rowData);
-    }
-    return initialData;
-  });
+  const [data, setData] = useState([]);
   const [editedRows, setEditedRows] = useState(new Set());
   const tableRef = useRef(null);
 
@@ -62,7 +52,7 @@ export default function Perevoz() {
   }, [handleCopy]);
 
   const fetchData = useCallback(() => {
-    fetch('/api/perevoz')
+    fetch('http://localhost:8080/api/perevoz')
       .then(res => res.json())
       .then(fetchedData => setData(fetchedData))
       .catch(error => console.error('Error fetching data:', error));

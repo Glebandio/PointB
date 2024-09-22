@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { ReactComponent as IconClose } from "./icon-close.svg";
 
 const managers = [
@@ -104,6 +105,29 @@ export const ProdazhiModal = ({ isOpen, onClose }) => {
             alert("Произошла ошибка при продаже контейнера");
         }
     };
+
+        const containerOptions = conts.map((cont) => ({
+            value: cont.numcont,
+            label: cont.numcont
+        }));
+
+        const handleSelectChange = (selectedOption) => {
+            handleChange({ target: { name: 'containers', value: selectedOption?.value || '' } });
+        };
+
+
+        const customStyles = {
+            control: (provided) => ({
+              ...provided,
+              width: '300px',
+              height: '40px',
+              backgroundColor: '#f0f0f0',
+              borderColor: '#ccc',
+              boxShadow: 'none',
+              border: 'none',
+            })
+
+        }
 
     return (
         <>
@@ -219,23 +243,28 @@ export const ProdazhiModal = ({ isOpen, onClose }) => {
                                         </label>
                                     </div>
                                 )}
-                                <div className="form-group">
+                                <div>
                                     <label>Номера контейнеров</label>
                                     <p>
-                                    <select className="input" name="containers" value={formData.containers} onChange={handleChange}>
-                                        <option value="">Выберите контейнер</option>
-                                        {conts.map((cont, index) => (
-                                            <option key={cont.numcont + index} value={cont.numcont}>{cont.numcont}</option>
-                                        ))}
-                                    </select>
+                                        <Select
+                                            className="input"
+                                            name="containers"
+                                            value={containerOptions.find(option => option.value === formData.containers)}
+                                            onChange={handleSelectChange}
+                                            options={containerOptions}
+                                            placeholder="Выберите контейнер"
+                                            isClearable
+                                            styles={customStyles}
+                                        />
                                     </p>
                                 </div>
                                 <div className="form-group">
                                     <label>Ответственный менеджер</label>
                                     <p>
-                                    <select className="input" name="manager" value={formData.manager} onChange={handleChange}>
-                                        <option value="">Выберите менеджера</option>
-                                        {managers.map((manager, index) => (
+                                        <select className="input" name="manager" value={formData.manager}
+                                                onChange={handleChange}>
+                                            <option value="">Выберите менеджера</option>
+                                            {managers.map((manager, index) => (
                                             <option key={manager + index} value={manager}>{manager}</option>
                                         ))}
                                     </select>

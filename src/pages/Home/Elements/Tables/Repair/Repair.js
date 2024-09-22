@@ -71,16 +71,16 @@ export default function Repair() {
   function handleMouseEnter(row, col) {
     if (isSelecting && selectionStart) {
       const newSelectedCells = new Set();
-      const startRow = Math.min(selectionStart.row, row);
-      const endRow = Math.max(selectionStart.row, row);
-      const startCol = Math.min(selectionStart.col, col);
-      const endCol = Math.max(selectionStart.col, col);
+      // const startRow = Math.min(selectionStart.row, row);
+      // const endRow = Math.max(selectionStart.row, row);
+      // const startCol = Math.min(selectionStart.col, col);
+      // const endCol = Math.max(selectionStart.col, col);
 
-      for (let r = startRow; r <= endRow; r++) {
-        for (let c = startCol; c <= endCol; c++) {
-          newSelectedCells.add(`${r}-${c}`);
-        }
-      }
+      // for (let r = startRow; r <= endRow; r++) {
+      //   for (let c = startCol; c <= endCol; c++) {
+      //     newSelectedCells.add(`${r}-${c}`);
+      //   }
+      // }
 
       setSelectedCells(newSelectedCells);
     }
